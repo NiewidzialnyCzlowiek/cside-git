@@ -36,8 +36,27 @@
 				"command": "cside-git.updateLocalRepo",
 				"title": "Update local repository",
 				"category": "CSIDE"
+			},
+			{
+				"command": "cside-git.updateLocalDev",
+				"title": "Update local development environment",
+				"category": "CSIDE"
+			},
+			{
+				"command": "cside-git.updateRemoteRepo",
+				"title": "Update remote repository",
+				"category": "CSIDE"
+			},
+			{
+				"command": "cside-git.updateLocalRepoWithRemote",
+				"title": "Update local repository with remote",
+				"category": "CSIDE"
 			}
-		]
+		],
+		"jsonValidation": [{
+			"fileMatch": "*envir*",
+			"url": "./jsonSchemas/environment-schema.json"
+		}]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

@@ -13,11 +13,19 @@ function Initialize-NavEnvironment {
         [ValidateSet("Force","Yes","No")]
         [string] $SynchronizeSchemaChanges = "Force"
     )
-    git clone $RemoteRepo $SourcesDirectory;
-    Update-DevEnvWithLocalRepo -DatabaseName $DatabaseName;
+    if (-Not(Test-Path -Path $SourcesDirectory"/*")) {
+        git clone $RemoteRepo $SourcesDirectory;
+        Update-LocalDevWithLocalRepo -DatabaseName $DatabaseName;
+        Write-Host "Local Development Environment initialized. Happy coding ;)";
+    }
+    else {
+        Write-Host "Local Development Environemnt already initialized. Updating local development environment.";
+        Update-LocalRepoWithRemoteRepo;
+        Update-LocalDevWithLocalRepo -DatabaseName $DatabaseName;
+    }
 }
 
-function Update-LocalRepoWithDevEnv {
+function Update-LocalRepoWithLocalDev {
     param(
         [Parameter(Mandatory=$true)]
         [string] $DatabaseName,
@@ -37,7 +45,7 @@ function Update-LocalRepoWithDevEnv {
     Remove-Item -Path $tempExportDirectory -Recurse -Force -ErrorAction Ignore;
 }
 
-function Update-DevEnvWithLocalRepo {
+function Update-LocalDevWithLocalRepo {
     param(
         [Parameter(Mandatory=$true)]
         [string] $DatabaseName,
@@ -45,26 +53,41 @@ function Update-DevEnvWithLocalRepo {
         [ValidateSet("Force","Yes","No")]
         [string] $SynchronizeSchemaChanges = "Force"
     )
-    Import-NAVApplicationObject -Path $SourcesDirectory"/*" -DatabaseName $DatabaseName -SynchronizeSchemaChanges $SynchronizeSchemaChanges -Confirm:$false;
-    Compile-NAVApplicationObject -DatabaseName $DatabaseName;
+    if (Test-Path -Path $SourcesDirectory"/*") {
+        Write-Host "Importing objects from "$SourcesDirectory;
+        Import-NAVApplicationObject -Path $SourcesDirectory"/*" -DatabaseName $DatabaseName -SynchronizeSchemaChanges $SynchronizeSchemaChanges -Confirm:$false;
+        Write-Host "Compiling imported objects";
+        Compile-NAVApplicationObject -DatabaseName $DatabaseName;
+    }
+    else {
+        Write-Error "The remote repository has not been cloned properly. Make sure that the remote uri is valid and you have permissions to access the files";
+    }
 }
 
 function Update-LocalRepoWithRemoteRepo {
     param(
-        [Parameter(Mandatory=$true)]
-        [string] $RemoteRepo,
-        [Parameter(Mandatory=$true)]
         [string] $SourcesDirectory = "./src"
     )
     $cwd = Get-Location;
     Set-Location $SourcesDirectory;
-    git pull $RemoteRepo;
+    git pull;
     git add .;
+    Set-Location $cwd;
+}
+
+function Update-RemoteRepoWithLocalRepo {
+    param(
+        [string] $SourcesDirectory = "./src"
+    )
+    $cwd = Get-Location;
+    Set-Location $SourcesDirectory;
+    git push;
     Set-Location $cwd;
 }
 
 Export-ModuleMember -Function Show-Info;
 Export-ModuleMember -Function Initialize-NavEnvironment;
-Export-ModuleMember -Function Update-LocalRepoWithDevEnv;
+Export-ModuleMember -Function Update-LocalRepoWithLocalDev;
+Export-ModuleMember -Function Update-LocalDevWithLocalRepo;
 Export-ModuleMember -Function Update-LocalRepoWithRemoteRepo;
-
+Export-ModuleMember -Function Update-RemoteRepoWithLocalRepo;

@@ -51,23 +51,61 @@ export class TerminalManager {
                 if(!this.navModulesLoaded) {
                     this.runLoadNavModules(env);
                 }
-                this.runCommand("Initialize-NAVEnvironment", [`-Repo "${env.repository}"`, `-DatabaseName "${env.databaseName}"`]);	
+                this.runCommand("Initialize-NAVEnvironment", [`-RemoteRepo "${env.repository}"`, `-DatabaseName "${env.databaseName}"`]);	
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot initialize local environemnt. ${e.message}`);
             });
     }
-
-    runUpdateLocalRepo() {
+    runUpdateLocalRepoWithLocalDev() {
         this.getEnvironment()
             .then((env) => {
                 if(!this.navModulesLoaded) {
                     this.runLoadNavModules(env);
                 }
-                this.runCommand("Update-LocalRepo", [`-DatabaseName "${env.databaseName}"`]);	
+                this.runCommand("Update-LocalRepoWithLocalDev", [`-DatabaseName "${env.databaseName}"`]);	
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot update local repository. ${e.message}`);
+            });
+    }
+
+    runUpdateLocalDevWithLocalRepo() {
+        this.getEnvironment()
+            .then((env) => {
+                if(!this.navModulesLoaded) {
+                    this.runLoadNavModules(env);
+                }
+                this.runCommand("Update-LocalDevWithLocalRepo", [`-DatabaseName "${env.databaseName}"`]);	
+            })
+            .catch((e) => {
+                vscode.window.showErrorMessage(`Cannot update local development environment. ${e.message}`);
+            });
+    }
+
+    runUpdateLocalRepoWithRemoteRepo() {
+        this.getEnvironment()
+            .then((env) => {
+                if(!this.navModulesLoaded) {
+                    this.runLoadNavModules(env);
+                }
+                this.runCommand("Update-LocalRepoWithRemoteRepo", []);	
+            })
+            .catch((e) => {
+                vscode.window.showErrorMessage(`Cannot update local development environment. ${e.message}`);
+            });
+    }
+
+    runUpdateRemoteRepoWithLocalRepo() {
+        this.getEnvironment()
+            .then((env) => {
+                if(!this.navModulesLoaded) {
+                    this.runLoadNavModules(env);
+                }
+                this.runCommand("Update-RemoteRepoWithLocalRepo", []);	
+            })
+            .catch((e) => {
+                vscode.window.showErrorMessage(`Cannot update local development environment. ${e.message}`);
             });
     }
 
@@ -98,17 +136,10 @@ export class TerminalManager {
     public runCommand(command: string, params: string[]) {
         command = `${command} ${params.join(" ")}`;
         if (!vscode.window.terminals.find((term) => term.name === this.terminalName)) {
-            vscode.window.showErrorMessage('Cannot find active cside-git terminal. You can create a new terminal with Create Terminal command in Command Pallet.');
+            vscode.window.showErrorMessage('Cannot find active cside-git terminal. You can create a new terminal using Create Terminal command in Command Pallet.');
         } else {
             this.terminal.sendText(command);
         }
-        // if(this.terminal) {
-        //     this.terminal.sendText(command);
-        // } else {
-        //     this.askIfRestartTerminal()
-        //         .then(() => this.terminal.sendText(command))
-        //         .catch(() => vscode.window.showErrorMessage("Cannot find active cside-git terminal"));
-        // }
     }
     
     public showTerminal() {

@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "databaseName": {
+            "type": "string",
+            "description": "Local development environment NAV database name"
+        },
+        "repository": {
+            "type": "string",
+            "format": "uri",
+            "description": "Uri leading to the remote repository that will be used to synchronize local development environment"
+        },
+        "navModulesPath": {
+            "type": "string",
+            "format": "uri",
+            "description": "Uri leading to the NavModelTools.ps1 file. Usually the file can be found in the Dynamics NAV client installation directory"
+        }
+    },
+    "required": ["databaseName", "repository", "navModulesPath"],
+    "additionalProperties": false
+}

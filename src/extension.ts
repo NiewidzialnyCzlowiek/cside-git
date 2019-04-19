@@ -22,8 +22,17 @@ export function activate(context: vscode.ExtensionContext) {
 		terminalManager.runInitializeEnvironement();
 	}));	
 	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.updateLocalRepo', () => {
-		terminalManager.runUpdateLocalRepo();
+		terminalManager.runUpdateLocalRepoWithLocalDev();
 	}));	
+	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.updateLocalDev', () => {
+		terminalManager.runUpdateLocalDevWithLocalRepo();
+	}));
+	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.updateRemoteRepo', () => {
+		terminalManager.runUpdateRemoteRepoWithLocalRepo();
+	}));
+	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.updateLocalRepoWithRemote', () => {
+		terminalManager.runUpdateLocalRepoWithRemoteRepo();
+	}));
 
 	vscode.workspace.onDidSaveTextDocument((document) => {
 		if(document.fileName.includes("envir")) {
