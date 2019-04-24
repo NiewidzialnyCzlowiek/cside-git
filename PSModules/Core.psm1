@@ -60,6 +60,7 @@ function Update-LocalDevWithLocalRepo {
         Join-NAVApplicationObjectFile -Source $SourcesDirectory"/*" -Destination $tempImportFilePath;
         Set-NAVApplicationObjectProperty -TargetPath $tempImportFilePath -ModifiedProperty "No" -DateTimeProperty "";        
         Import-NAVApplicationObject -Path $tempImportFilePath -DatabaseName $DatabaseName -SynchronizeSchemaChanges $SynchronizeSchemaChanges -Confirm:$false;
+        Remove-Item -Path $tempImportDirectory -Recurse -Force -ErrorAction Ignore;
         Write-Host "Compiling imported objects";
         Compile-NAVApplicationObject -DatabaseName $DatabaseName -SynchronizeSchemaChanges $SynchronizeSchemaChanges;
     }

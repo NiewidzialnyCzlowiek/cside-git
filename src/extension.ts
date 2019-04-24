@@ -109,6 +109,7 @@ function importEnvironmentSettings() {
 		.then((document) => {
 			const env = JSON.parse(document.getText()) as Environment;
 			vscode.window.showTextDocument(document);
+			return env;
 		})
 		.then((env) => {
 			globalContext.workspaceState.update(environmentGlobalId, env);
