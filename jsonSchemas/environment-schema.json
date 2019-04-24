@@ -2,21 +2,48 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
-        "databaseName": {
-            "type": "string",
-            "description": "Local development environment NAV database name"
+        "database": {
+            "type": "object",
+            "properties": {
+                "databaseName": {
+                    "type": "string",
+                    "description": "Local development environment NAV database name"
+                }
+            },
+            "required": ["databaseName"]
         },
         "repository": {
-            "type": "string",
-            "format": "uri",
-            "description": "Uri leading to the remote repository that will be used to synchronize local development environment"
+            "type": "object",
+            "properties": {
+                "remoteRepository": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Uri leading to the remote repository that will be used to synchronize local development environment"
+                },
+                "localSourcesDirectory": {
+                    "type": "string",
+                    "description": "Uri leading to the remote repository that will be used to synchronize local development environment"    
+                }
+            },
+            "required": ["remoteRepository", "localSourcesDirectory"]
         },
-        "navModulesPath": {
-            "type": "string",
-            "format": "uri",
-            "description": "Uri leading to the NavModelTools.ps1 file. Usually the file can be found in the Dynamics NAV client installation directory"
+        "navModules": {
+            "type": "object",
+            "properties": {
+                "navModelToolsPath": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Uri leading to the NavModelTools.ps1 file. Usually the file can be found in the Dynamics NAV client installation directory"
+                },
+                "navAdminToolPath": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Uri leading to the NavAdminTool.ps1 file. Usually the file can be found in the Dynamics NAV server installation directory"
+                }
+            },
+            "required": ["navModelToolsPath"]
         }
     },
-    "required": ["databaseName", "repository", "navModulesPath"],
+    "required": ["database", "repository", "navModules"],
     "additionalProperties": false
 }

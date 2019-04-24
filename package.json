@@ -3,6 +3,11 @@
 	"displayName": "cside-git",
 	"description": "Git support for C/SIDE development",
 	"repository": "https://github.com/NiewidzialnyCzlowiek/cside-git",
+	"author": {
+		"email": "bartlomiej.szal@gmail.com",
+		"name": "Bartłomiej Szal"
+	},
+	"publisher": "bartlomiejszal",
 	"license": "MIT",
 	"version": "0.0.1",
 	"engines": {
@@ -12,11 +17,18 @@
 		"Other"
 	],
 	"activationEvents": [
-		"workspaceContains:*envir*.json"
+		"workspaceContains:*envir*.json",
+		"workspaceContains:*nav*.json",
+		"onCommand:cside-git.newProject"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
+			{
+				"command": "cside-git.newProject",
+				"title": "Create new project",
+				"category": "CSIDE"
+			},
 			{
 				"command": "cside-git.createTerminal",
 				"title": "Create terminal",

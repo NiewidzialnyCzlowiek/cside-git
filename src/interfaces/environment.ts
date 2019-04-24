@@ -1,5 +1,15 @@
 export interface Environment {
-    databaseName: string;
-    repository: string;
-    navModulesPath: string;
+    database: {
+        databaseName: string;
+        // Feature not implemented yet
+        // uidOffset: number;
+    };
+    repository: {
+        remoteRepository: string,
+        localSourcesDirectory: string
+    };
+    navModules: {
+        navModelToolsPath: string,
+        navAdminToolPath: string
+    };
 }

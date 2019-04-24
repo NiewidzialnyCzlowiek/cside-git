@@ -31,12 +31,18 @@ export class TerminalManager {
     
     runLoadNavModules(env?: Environment) {
         if(env) {
-            this.runCommand(`&"${env.navModulesPath}"`, []);
+            this.runCommand(`&"${env.navModules.navModelToolsPath}"`, []);
+            if(env.navModules.navAdminToolPath) {
+                this.runCommand(`&"${env.navModules.navAdminToolPath}"`, []);
+            }
             this.navModulesLoaded = true;
         } else {
             this.getEnvironment()
                 .then((env) => {
-                    this.runCommand(`&"${env.navModulesPath}"`, []);
+                    this.runCommand(`&"${env.navModules.navModelToolsPath}"`, []);
+                    if(env.navModules.navAdminToolPath) {
+                        this.runCommand(`&"${env.navModules.navAdminToolPath}"`, []);
+                    }
                     this.navModulesLoaded = true;
                 })
                 .catch((e) => {
@@ -51,19 +57,20 @@ export class TerminalManager {
                 if(!this.navModulesLoaded) {
                     this.runLoadNavModules(env);
                 }
-                this.runCommand("Initialize-NAVEnvironment", [`-RemoteRepo "${env.repository}"`, `-DatabaseName "${env.databaseName}"`]);	
+                this.runCommand("Initialize-NAVEnvironment", [`-RemoteRepo "${env.repository.remoteRepository}"`, `-DatabaseName "${env.database.databaseName}"`, `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot initialize local environemnt. ${e.message}`);
             });
     }
+    
     runUpdateLocalRepoWithLocalDev() {
         this.getEnvironment()
             .then((env) => {
                 if(!this.navModulesLoaded) {
                     this.runLoadNavModules(env);
                 }
-                this.runCommand("Update-LocalRepoWithLocalDev", [`-DatabaseName "${env.databaseName}"`]);	
+                this.runCommand("Update-LocalRepoWithLocalDev", [`-DatabaseName "${env.database.databaseName}"`, `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot update local repository. ${e.message}`);
@@ -76,7 +83,7 @@ export class TerminalManager {
                 if(!this.navModulesLoaded) {
                     this.runLoadNavModules(env);
                 }
-                this.runCommand("Update-LocalDevWithLocalRepo", [`-DatabaseName "${env.databaseName}"`]);	
+                this.runCommand("Update-LocalDevWithLocalRepo", [`-DatabaseName "${env.database.databaseName}"`, `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot update local development environment. ${e.message}`);
@@ -89,7 +96,7 @@ export class TerminalManager {
                 if(!this.navModulesLoaded) {
                     this.runLoadNavModules(env);
                 }
-                this.runCommand("Update-LocalRepoWithRemoteRepo", []);	
+                this.runCommand("Update-LocalRepoWithRemoteRepo", [`-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot update local development environment. ${e.message}`);
@@ -102,7 +109,7 @@ export class TerminalManager {
                 if(!this.navModulesLoaded) {
                     this.runLoadNavModules(env);
                 }
-                this.runCommand("Update-RemoteRepoWithLocalRepo", []);	
+                this.runCommand("Update-RemoteRepoWithLocalRepo", [`-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot update local development environment. ${e.message}`);

@@ -3,6 +3,9 @@
 import * as vscode from 'vscode';
 import { TerminalManager } from './terminal-manager';
 import { Environment } from './interfaces/environment';
+import { mkdirSync, writeFileSync, existsSync } from 'fs';
+import { join } from 'path';
+import { createDefaultEnvironment } from './default-values';
 
 let globalContext: vscode.ExtensionContext;
 const environmentGlobalId = "environment";
@@ -12,6 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
 	let terminalManager = new TerminalManager(globalContext);
 	importEnvironmentSettings();
 
+	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.newProject', () => {
+		createCSIDEProject();
+	}));
 	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.createTerminal', () => {
 		terminalManager.tryToRestartTerminalOnDidCloseTerminal(true);
 	}));
@@ -34,36 +40,78 @@ export function activate(context: vscode.ExtensionContext) {
 		terminalManager.runUpdateLocalRepoWithRemoteRepo();
 	}));
 
-	vscode.workspace.onDidSaveTextDocument((document) => {
+	globalContext.subscriptions.push(vscode.workspace.onDidSaveTextDocument((document) => {
 		if(document.fileName.includes("envir")) {
 			importEnvironmentSettings();
 		}
-	});
-	vscode.window.onDidCloseTerminal((terminal) => {
+	}));
+	globalContext.subscriptions.push(vscode.window.onDidCloseTerminal((terminal) => {
 		if(terminal.name === terminalManager.terminalName) {
 			terminalManager.tryToRestartTerminalOnDidCloseTerminal();
 		}
-	});
+	}));
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
 
-function importEnvironmentSettings() {
-	try {
-		vscode.workspace.findFiles('*envir*', 'node_modules', 1)
-			.then((uris) => {
-				return vscode.workspace.openTextDocument(uris[0]);
-			})
-			.then((document) => {
-				let env = JSON.parse(document.getText());
-				return env;
-			})
-			.then((env) => {
-				globalContext.workspaceState.update(environmentGlobalId, env);
-				vscode.window.showInformationMessage("Environment settings have been loaded");
+async function createCSIDEProject() {
+	const projectName = await vscode.window.showInputBox({
+		value: 'NewCSIDEProject',
+		valueSelection: undefined,
+		placeHolder: 'Project name',
+	});
+	if(projectName) {
+		const options: vscode.OpenDialogOptions = {
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: "New project location"
+		};
+		vscode.window.showOpenDialog(options)
+			.then((uri) => {
+				if(uri && uri[0]) {
+					createAndOpenNewProject(uri[0], projectName);
+				}
 			});
-	} catch(e) {
-		console.log(e.message);
 	}
+}
+
+function createAndOpenNewProject(uri: vscode.Uri, projectName: string) {
+	const projectLocation = createProjectDirectory(uri, projectName);
+	const _ = createDefaultEnvironmentFile(projectLocation);
+	vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.parse("file:///" + projectLocation));
+}
+
+function createProjectDirectory(uri: vscode.Uri, projectName: string) {
+	const location = join(uri.fsPath, projectName);
+	if(!existsSync(location)) {
+		mkdirSync(location);
+	}
+	return location;
+}
+
+function createDefaultEnvironmentFile(projectLocation: string) {
+	const path = join(projectLocation, "nav-environment.json");
+	if(!existsSync(path)) {
+		const env = createDefaultEnvironment();
+		writeFileSync(path, JSON.stringify(env, undefined, 4), 'utf8');
+	}
+	return path;
+}
+
+
+function importEnvironmentSettings() {
+	vscode.workspace.findFiles('*envir*', 'node_modules', 1)
+		.then((uris) => {
+			return vscode.workspace.openTextDocument(uris[0]);
+		})
+		.then((document) => {
+			const env = JSON.parse(document.getText()) as Environment;
+			vscode.window.showTextDocument(document);
+		})
+		.then((env) => {
+			globalContext.workspaceState.update(environmentGlobalId, env);
+			vscode.window.showInformationMessage("Environment settings have been loaded");
+		});
 }
