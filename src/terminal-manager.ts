@@ -31,11 +31,13 @@ export class TerminalManager {
     
     runLoadNavModules(env?: Environment) {
         if(env) {
-            this.runCommand(`&"${env.navModules.navModelToolsPath}"`, []);
-            if(env.navModules.navAdminToolPath) {
-                this.runCommand(`&"${env.navModules.navAdminToolPath}"`, []);
+            if(env.type === EnvironmentType.local) {
+                this.runCommand(`&"${env.navModules.navModelToolsPath}"`, []);
+                if(env.navModules.navAdminToolPath) {
+                    this.runCommand(`&"${env.navModules.navAdminToolPath}"`, []);
+                }
+                this.navModulesLoaded = true;
             }
-            this.navModulesLoaded = true;
         } else {
             this.getEnvironment()
                 .then((env) => {
@@ -54,10 +56,24 @@ export class TerminalManager {
     runInitializeEnvironement() {
         this.getEnvironment()
             .then((env) => {
-                if(!this.navModulesLoaded) {
-                    this.runLoadNavModules(env);
+                if(env.type == EnvironmentType.container) {
+                    this.runCommand("Initialize-NavEnvironment", 
+                        [`-RemoteRepo "${env.repository.remoteRepository}"`,
+                        `-DatabaseName "${env.database.databaseName}"`, 
+                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
+                        `-ContainerName "${env.container.name}"`,
+                        '-Local $False']);
                 }
-                this.runCommand("Initialize-NAVEnvironment", [`-RemoteRepo "${env.repository.remoteRepository}"`, `-DatabaseName "${env.database.databaseName}"`, `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
+                else {
+                    if(!this.navModulesLoaded) {
+                        this.runLoadNavModules(env);
+                    }
+                    this.runCommand("Initialize-NavEnvironment",
+                        [`-RemoteRepo "${env.repository.remoteRepository}"`,
+                        `-DatabaseName "${env.database.databaseName}"`,
+                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
+                        '-Local $True']);	
+                }
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot initialize local environemnt. ${e.message}`);
@@ -67,7 +83,7 @@ export class TerminalManager {
     runUpdateLocalRepoWithLocalDev() {
         this.getEnvironment()
             .then((env) => {
-                if (env.type === EnvironmentType.container) {
+                if(env.type === EnvironmentType.container) {
                     this.runCommand("Update-LocalRepoWithContainerDev",
                         [`-ContainerName "${env.container.name}"`,
                         `-DatabaseName "${env.database.databaseName}"`,
@@ -88,7 +104,7 @@ export class TerminalManager {
     runUpdateLocalDevWithLocalRepo() {
         this.getEnvironment()
             .then((env) => {
-                if (env.type === EnvironmentType.container) {
+                if(env.type === EnvironmentType.container) {
                     this.runCommand("Update-ContainerDevWithLocalRepo", 
                         [`-ContainerName "${env.container.name}"`,
                         `-DatabaseName "${env.database.databaseName}"`,
@@ -149,16 +165,16 @@ export class TerminalManager {
             this.terminal = vscode.window.createTerminal(this.terminalName);
             this.navModulesLoaded = false;
         }
-        if (this.terminal) {
+        if(this.terminal) {
             this.terminal.sendText('powershell');
-            this.terminal.sendText('Import-Module ' + this.context.asAbsolutePath('PSModules/Core'));
+            this.terminal.sendText(`Import-Module "${this.context.asAbsolutePath('PSModules/Core')}"`);
             this.terminal.show(true);
         }
     }
 
     public runCommand(command: string, params: string[]) {
         command = `${command} ${params.join(" ")}`;
-        if (!vscode.window.terminals.find((term) => term.name === this.terminalName)) {
+        if(!vscode.window.terminals.find((term) => term.name === this.terminalName)) {
             vscode.window.showErrorMessage('Cannot find active cside-git terminal. You can create a new terminal using Create Terminal command in Command Pallet.');
         } else {
             this.terminal.sendText(command);
@@ -185,8 +201,8 @@ export class TerminalManager {
             ] as vscode.MessageItem[];
             vscode.window.showErrorMessage('C/SIDE Git terminal has been closed. Should we restart it?', { modal: false }, messageItems[0], messageItems[1])
                 .then((value: vscode.MessageItem | undefined) => {
-                    if (value) {
-                        if (value.title === messageItems[0].title) {
+                    if(value) {
+                        if(value.title === messageItems[0].title) {
                             resolve(true);
                         } else {
                             reject(new Error("Couldn't restart terminal"));
