@@ -64,7 +64,7 @@
     "required": ["type", "database", "repository"],
     "if": {
         "properties": {
-            "type": {"enum": ["container"]}
+            "type": {"enum": ["Container"]}
         }
     },
     "then": { "required": ["container"] },

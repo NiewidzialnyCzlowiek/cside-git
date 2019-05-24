@@ -66,10 +66,12 @@
 				"category": "CSIDE"
 			}
 		],
-		"jsonValidation": [{
-			"fileMatch": "*envir*",
-			"url": "./jsonSchemas/environment-schema.json"
-		}]
+		"jsonValidation": [
+			{
+				"fileMatch": "*envir*",
+				"url": "./jsonSchemas/environment-schema.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
