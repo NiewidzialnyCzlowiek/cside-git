@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Environment } from './interfaces/environment';
+import { Environment, EnvironmentType } from './interfaces/environment';
 
 export class TerminalManager {
     private readonly environmentGlobalId = "environment";
@@ -67,10 +67,18 @@ export class TerminalManager {
     runUpdateLocalRepoWithLocalDev() {
         this.getEnvironment()
             .then((env) => {
-                if(!this.navModulesLoaded) {
-                    this.runLoadNavModules(env);
+                if (env.type === EnvironmentType.container) {
+                    this.runCommand("Update-LocalRepoWithContainerDev",
+                        [`-ContainerName "${env.container.name}"`,
+                        `-DatabaseName "${env.database.databaseName}"`,
+                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
                 }
-                this.runCommand("Update-LocalRepoWithLocalDev", [`-DatabaseName "${env.database.databaseName}"`, `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
+                else {
+                    if(!this.navModulesLoaded) {
+                        this.runLoadNavModules(env);
+                    }
+                    this.runCommand("Update-LocalRepoWithLocalDev", [`-DatabaseName "${env.database.databaseName}"`, `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
+                }
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot update local repository. ${e.message}`);
@@ -80,10 +88,18 @@ export class TerminalManager {
     runUpdateLocalDevWithLocalRepo() {
         this.getEnvironment()
             .then((env) => {
-                if(!this.navModulesLoaded) {
-                    this.runLoadNavModules(env);
+                if (env.type === EnvironmentType.container) {
+                    this.runCommand("Update-ContainerDevWithLocalRepo", 
+                        [`-ContainerName "${env.container.name}"`,
+                        `-DatabaseName "${env.database.databaseName}"`,
+                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
                 }
-                this.runCommand("Update-LocalDevWithLocalRepo", [`-DatabaseName "${env.database.databaseName}"`, `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
+                else {
+                    if(!this.navModulesLoaded) {
+                        this.runLoadNavModules(env);
+                    }
+                    this.runCommand("Update-LocalDevWithLocalRepo", [`-DatabaseName "${env.database.databaseName}"`, `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
+                }
             })
             .catch((e) => {
                 vscode.window.showErrorMessage(`Cannot update local development environment. ${e.message}`);
@@ -123,7 +139,7 @@ export class TerminalManager {
                 return resolve(env);
             }
             else {
-                return reject(new Error("The C/SIDE environment is not loaded."));
+                return reject(new Error("The environment settings have not benn loaded."));
             }
         });
     }
@@ -135,7 +151,7 @@ export class TerminalManager {
         }
         if (this.terminal) {
             this.terminal.sendText('powershell');
-            this.terminal.sendText('Import-Module ' + this.context.asAbsolutePath('PSModules/Core.psm1'));
+            this.terminal.sendText('Import-Module ' + this.context.asAbsolutePath('PSModules/Core'));
             this.terminal.show(true);
         }
     }
