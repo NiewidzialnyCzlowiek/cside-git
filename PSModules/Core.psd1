@@ -8,7 +8,7 @@
 
 @{
     # Script module or binary module file associated with this manifest
-    #RootModule = ''
+    RootModule = 'Core.psm1'
     
     # Version number of this module.
     ModuleVersion = '1.0'
@@ -62,7 +62,7 @@
     # FormatsToProcess = @()
     
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    NestedModules = @("./Utils/Utils.psm1", "./ContainerDev/ContainerDev.psm1", "./LocalDev/LocalDev.psm1")
+    NestedModules = @("./Utils/Utils.ps1", "./ContainerDev/ContainerDev.ps1", "./LocalDev/LocalDev.ps1")
     
     # Functions to export from this module
     FunctionsToExport = '*'

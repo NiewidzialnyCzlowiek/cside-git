@@ -30,7 +30,7 @@ function Initialize-NavEnvironment {
         [Parameter(Mandatory=$true)]
         [string] $DatabaseName,
         [Parameter(Mandatory=$true)]
-        [bool] $local,
+        [bool] $Local,
         [string] $ContainerName,
         [string] $SourcesDirectory = "./src",
         [ValidateSet("Force","Yes","No")]
@@ -42,11 +42,13 @@ function Initialize-NavEnvironment {
             Update-LocalDevWithLocalRepo -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory;
         }
         else {
-            Update-ContainerDevWithLocalRepo;
+            Update-ContainerDevWithLocalRepo -ContainerName $ContainerName -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory;
         }
         Write-Host "Local Development Environment initialized. Happy coding ;)";
     }
-    Write-Host "Local Development Environemnt already initialized. Please use one of update commands.";
+    else {
+        Write-Host "Local Development Environemnt already initialized. Please use one of update commands.";
+    }
 }
 
 
@@ -73,7 +75,5 @@ function Update-RemoteRepoWithLocalRepo {
 
 Export-ModuleMember -Function New-NavEnvironment;
 Export-ModuleMember -Function Initialize-NavEnvironment;
-# Export-ModuleMember -Function Update-LocalRepoWithLocalDev;
-# Export-ModuleMember -Function Update-LocalDevWithLocalRepo;
 Export-ModuleMember -Function Update-LocalRepoWithRemoteRepo;
 Export-ModuleMember -Function Update-RemoteRepoWithLocalRepo;
