@@ -1,9 +1,11 @@
-function New-NavEnvironment {
+function Initialize-RemoteReportWithLocalDev {
     param(
         [Parameter(Mandatory=$true)]
         [string] $RemoteRepo,
         [Parameter(Mandatory=$true)]
         [string] $DatabaseName,
+        [bool] $UseContainers = $false,
+        [string] $ContainerName,
         [string] $SourcesDirectory = "./src"
     )
     $RemoteRepoDirectory = "$($RemoteRepo).git";
@@ -15,10 +17,14 @@ function New-NavEnvironment {
     $objectTypes = "Table","Page","Query","Report","XMLport","MenuSuite";
     foreach ($objectType in $objectTypes) {
         $Filter = "Type=$($objectType)";
-        Update-LocalRepoWithLocalDev -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory -Filter $Filter;
+        if ($UseContainers) {
+            Update-LocalRepoWithContainerDev -DatabaseName $DatabaseName -ContainerName $ContainerName -SourcesDirectory $SourcesDirectory -Filter $Filter    
+        } else {
+            Update-LocalRepoWithLocalDev -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory -Filter $Filter;
+        }
         Invoke-CommandInDirectory -Directory $SourcesDirectory -ScriptBlock {
             git add .;
-            git commit -m "Add all objects of type $($objectType)";
+            git commit -m "Add all $($objectType) objects";
         }
     }
 }
@@ -30,7 +36,7 @@ function Initialize-NavEnvironment {
         [Parameter(Mandatory=$true)]
         [string] $DatabaseName,
         [Parameter(Mandatory=$true)]
-        [bool] $Local,
+        [bool] $UseContainers,
         [string] $ContainerName,
         [string] $SourcesDirectory = "./src",
         [ValidateSet("Force","Yes","No")]
@@ -38,11 +44,11 @@ function Initialize-NavEnvironment {
     )
     if (-Not(Test-Path -Path $SourcesDirectory"/*")) {
         git clone $RemoteRepo $SourcesDirectory;
-        if ($local) {
-            Update-LocalDevWithLocalRepo -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory;
+        if ($UseContainers) {
+            Update-ContainerDevWithLocalRepo -ContainerName $ContainerName -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory;
         }
         else {
-            Update-ContainerDevWithLocalRepo -ContainerName $ContainerName -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory;
+            Update-LocalDevWithLocalRepo -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory;
         }
         Write-Host "Local Development Environment initialized. Happy coding ;)";
     }

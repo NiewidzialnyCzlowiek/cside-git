@@ -24,6 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
 	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.loadNavModules', () => {
 		terminalManager.runLoadNavModules();
 	}));
+	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.initializeRemoteWithLocalDev', () => {
+		terminalManager.runInitializeRemoteRepoWithLocalDev()
+	}))
 	globalContext.subscriptions.push(vscode.commands.registerCommand('cside-git.initializeEnvironment', () => {
 		terminalManager.runInitializeEnvironement();
 	}));	

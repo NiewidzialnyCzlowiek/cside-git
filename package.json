@@ -41,6 +41,11 @@
 				"category": "CSIDE"
 			},
 			{
+				"command": "cside-git.initializeRemoteWithLocalDev",
+				"title": "Initialize remote with local dev",
+				"category": "CSIDE"
+			},
+			{
 				"command": "cside-git.initializeEnvironment",
 				"title": "Initialize environment",
 				"category": "CSIDE"

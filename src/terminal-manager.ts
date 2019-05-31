@@ -53,6 +53,33 @@ export class TerminalManager {
         }
     }
 
+    runInitializeRemoteRepoWithLocalDev() {
+        this.getEnvironment()
+            .then((env) => {
+                if(env.type == EnvironmentType.container) {
+                    this.runCommand("Initialize-RemoteReportWithLocalDev", 
+                        [`-RemoteRepo "${env.repository.remoteRepository}"`,
+                        `-DatabaseName "${env.database.databaseName}"`, 
+                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
+                        `-ContainerName "${env.container.name}"`,
+                        '-UseContainers $false']);
+                }
+                else {
+                    if(!this.navModulesLoaded) {
+                        this.runLoadNavModules(env);
+                    }
+                    this.runCommand("Initialize-RemoteReportWithLocalDev",
+                        [`-RemoteRepo "${env.repository.remoteRepository}"`,
+                        `-DatabaseName "${env.database.databaseName}"`,
+                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
+                        '-UseContainers $true']);
+                }
+            })
+            .catch((e) => {
+                vscode.window.showErrorMessage(`Cannot initialize remote repository. ${e.message}`);
+            });
+    }
+
     runInitializeEnvironement() {
         this.getEnvironment()
             .then((env) => {
@@ -62,7 +89,7 @@ export class TerminalManager {
                         `-DatabaseName "${env.database.databaseName}"`, 
                         `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
                         `-ContainerName "${env.container.name}"`,
-                        '-Local $False']);
+                        '-UseContainers $false']);
                 }
                 else {
                     if(!this.navModulesLoaded) {
@@ -72,7 +99,7 @@ export class TerminalManager {
                         [`-RemoteRepo "${env.repository.remoteRepository}"`,
                         `-DatabaseName "${env.database.databaseName}"`,
                         `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
-                        '-Local $True']);	
+                        '-UseContainers $true']);	
                 }
             })
             .catch((e) => {
