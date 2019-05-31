@@ -53,8 +53,7 @@ No issues are known...
 
 ## Release Notes
 
-###1.1.0.0
-Add container hosted development environment support.
+Users appreciate release notes as you update your extension.
 
 <!-- ### 1.0.0
 
