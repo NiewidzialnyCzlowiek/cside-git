@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import { TerminalManager } from './terminal-manager';
 import { Environment, EnvironmentType } from './interfaces/environment';
-import { mkdirSync, writeFileSync, existsSync, writeFile, WriteFileOptions } from 'fs';
+import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { createDefaultEnvironment, createDefaultLocalEnvironment, createDefaultContainerEnvironment } from './default-values';
 

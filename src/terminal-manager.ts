@@ -57,22 +57,22 @@ export class TerminalManager {
         this.getEnvironment()
             .then((env) => {
                 if(env.type == EnvironmentType.container) {
-                    this.runCommand("Initialize-RemoteReportWithLocalDev", 
-                        [`-RemoteRepo "${env.repository.remoteRepository}"`,
-                        `-DatabaseName "${env.database.databaseName}"`, 
-                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
-                        `-ContainerName "${env.container.name}"`,
-                        '-UseContainers $false']);
-                }
-                else {
-                    if(!this.navModulesLoaded) {
-                        this.runLoadNavModules(env);
-                    }
-                    this.runCommand("Initialize-RemoteReportWithLocalDev",
+                    this.runCommand("Initialize-RemoteRepoWithLocalDev", 
                         [`-RemoteRepo "${env.repository.remoteRepository}"`,
                         `-DatabaseName "${env.database.databaseName}"`,
                         `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
+                        `-ContainerName "${env.container.name}"`,
                         '-UseContainers $true']);
+                    }
+                    else {
+                        if(!this.navModulesLoaded) {
+                            this.runLoadNavModules(env);
+                        }
+                        this.runCommand("Initialize-RemoteRepoWithLocalDev",
+                        [`-RemoteRepo "${env.repository.remoteRepository}"`,
+                        `-DatabaseName "${env.database.databaseName}"`,
+                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
+                        '-UseContainers $false']);
                 }
             })
             .catch((e) => {
@@ -89,7 +89,7 @@ export class TerminalManager {
                         `-DatabaseName "${env.database.databaseName}"`, 
                         `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
                         `-ContainerName "${env.container.name}"`,
-                        '-UseContainers $false']);
+                        '-UseContainers $true']);
                 }
                 else {
                     if(!this.navModulesLoaded) {
@@ -99,7 +99,7 @@ export class TerminalManager {
                         [`-RemoteRepo "${env.repository.remoteRepository}"`,
                         `-DatabaseName "${env.database.databaseName}"`,
                         `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
-                        '-UseContainers $true']);	
+                        '-UseContainers $false']);	
                 }
             })
             .catch((e) => {
