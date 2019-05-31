@@ -13,7 +13,7 @@ function Copy-ArchiveFromContainerThenExpandAndDelete {
     $containerPart = [string]::Join(":", @($ContainerName, $containerArchivePath));
     $destinationPath = Join-Path $SourcesDirectory $ArchiveName;
     docker cp $containerPart $destinationPath;
-    Expand-Archive -Path $destinationPath -DestinationPath $SourcesDirectory -Force -Confirm:$false;
+    Expand-Archive -Path $destinationPath -DestinationPath $SourcesDirectory -Force;
     Remove-Item -Path $destinationPath -Force -ErrorAction Ignore;
 }
 
