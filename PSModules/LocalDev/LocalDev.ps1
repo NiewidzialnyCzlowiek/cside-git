@@ -11,7 +11,7 @@ function Update-LocalRepoWithLocalDev {
     if (-Not(Test-Path -Path $tempExportDirectory)) {
         New-Item -Path $tempExportDirectory -ItemType Directory | Out-Null;
     }
-    Export-NAVApplicationObject -DatabaseName $DatabaseName -Filter $Filter -Path $tempExportFilePath -Force -Confirm:$false | Out-Null;
+    Export-NAVApplicationObject -DatabaseName $DatabaseName -Filter $Filter -Path $tempExportFilePath -ExportTxtSkipUnlicensed -Force -Confirm:$false | Out-Null;
     Set-NAVApplicationObjectProperty -TargetPath $tempExportFilePath -ModifiedProperty "No" -DateTimeProperty "";
     if(Test-Path -Path $tempExportFilePath) {
         Split-NAVApplicationObjectFile -Source $tempExportFilePath -Destination $SourcesDirectory -Force -Confirm:$false;

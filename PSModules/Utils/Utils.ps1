@@ -17,7 +17,7 @@ function Invoke-CommandInDirectory {
     $cwd = Get-Location;
     Set-Location -Path $Directory;
     $returnValue = Invoke-Command -ScriptBlock $ScriptBlock -Args $ArgumentList;
-    Set-Localation $cwd;
+    Set-Location $cwd;
     return $returnValue;
 }
 

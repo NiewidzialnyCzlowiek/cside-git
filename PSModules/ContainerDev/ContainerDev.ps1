@@ -70,7 +70,7 @@ function Update-LocalRepoWithContainerDev {
             New-Item -Path $tempExportDirectory -ItemType Directory | Out-Null;
         }
         
-        Export-NAVApplicationObject -DatabaseName $args[0] -Filter $args[1] -Path $tempExportFilePath -Force -Confirm:$false | Out-Null;
+        Export-NAVApplicationObject -DatabaseName $args[0] -Filter $args[1] -Path $tempExportFilePath -ExportTxtSkipUnlicensed -Force -Confirm:$false | Out-Null;
         Set-NAVApplicationObjectProperty -TargetPath $tempExportFilePath -ModifiedProperty "No" -DateTimeProperty "";
         if(Test-Path -Path $tempExportFilePath) {
             Split-NAVApplicationObjectFile -Source $tempExportFilePath -Destination $tempExportDirectory -Force -Confirm:$false;

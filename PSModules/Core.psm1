@@ -1,4 +1,4 @@
-function Initialize-RemoteReportWithLocalDev {
+function Initialize-RemoteRepoWithLocalDev {
     param(
         [Parameter(Mandatory=$true)]
         [string] $RemoteRepo,
@@ -7,28 +7,28 @@ function Initialize-RemoteReportWithLocalDev {
         [bool] $UseContainers = $false,
         [string] $ContainerName,
         [string] $SourcesDirectory = "./src"
-    )
-    $RemoteRepoDirectory = "$($RemoteRepo).git";
-    git init --bare $RemoteRepoDirectory;
-    if (Test-Path -Path $SourcesDirectory) {
-        Remove-Item $SourcesDirectory -Recurse -Force;
-    }
-    git clone $RemoteRepo $SourcesDirectory;
-    $objectTypes = "Table","Page","Query","Report","XMLport","MenuSuite";
-    foreach ($objectType in $objectTypes) {
-        $Filter = "Type=$($objectType)";
-        if ($UseContainers) {
-            Update-LocalRepoWithContainerDev -DatabaseName $DatabaseName -ContainerName $ContainerName -SourcesDirectory $SourcesDirectory -Filter $Filter    
-        } else {
-            Update-LocalRepoWithLocalDev -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory -Filter $Filter;
+        )
+        $RemoteRepoDirectory = "$($RemoteRepo).git";
+        git init --bare $RemoteRepoDirectory;
+        if (Test-Path -Path $SourcesDirectory) {
+            Remove-Item $SourcesDirectory -Recurse -Force;
         }
-        Invoke-CommandInDirectory -Directory $SourcesDirectory -ScriptBlock {
-            git add .;
-            git commit -m "Add all $($objectType) objects";
+        git clone $RemoteRepo $SourcesDirectory;
+        $objectTypes = "Table","Page","Query","Report","XMLport","MenuSuite";
+        foreach ($objectType in $objectTypes) {
+            $Filter = "Type=$($objectType)";
+            if ($UseContainers) {
+                Update-LocalRepoWithContainerDev -DatabaseName $DatabaseName -ContainerName $ContainerName -SourcesDirectory $SourcesDirectory -Filter $Filter    
+            } else {
+                Update-LocalRepoWithLocalDev -DatabaseName $DatabaseName -SourcesDirectory $SourcesDirectory -Filter $Filter;
+            }
+            Invoke-CommandInDirectory -Directory $SourcesDirectory -ScriptBlock {
+                git add .;
+                git commit -m "Add all $($objectType) objects";
+            }
         }
     }
-}
-
+    
 function Initialize-NavEnvironment {
     param(
         [Parameter(Mandatory=$true)]
@@ -79,7 +79,7 @@ function Update-RemoteRepoWithLocalRepo {
     Set-Location $cwd;
 }
 
-Export-ModuleMember -Function Initialize-RemoteReportWithLocalDev;
+Export-ModuleMember -Function Initialize-RemoteRepoWithLocalDev;
 Export-ModuleMember -Function Initialize-NavEnvironment;
 Export-ModuleMember -Function Update-LocalRepoWithRemoteRepo;
 Export-ModuleMember -Function Update-RemoteRepoWithLocalRepo;
