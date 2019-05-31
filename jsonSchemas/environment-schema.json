@@ -2,12 +2,29 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
+        "type": {
+            "type": "string",
+            "enum": ["Local","Container"]
+        },
+        "container": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the container that you want to work with"
+                },
+                "serverInstance": {
+                    "type": "string",
+                    "description": "Name of the NAV server instance inside the container"
+                }
+            }
+        },
         "database": {
             "type": "object",
             "properties": {
                 "databaseName": {
                     "type": "string",
-                    "description": "Local development environment NAV database name"
+                    "description": "NAV database name"
                 }
             },
             "required": ["databaseName"]
@@ -22,7 +39,7 @@
                 },
                 "localSourcesDirectory": {
                     "type": "string",
-                    "description": "Uri leading to the remote repository that will be used to synchronize local development environment"    
+                    "description": "Path to the directory where the NAV objects will be stored locally"    
                 }
             },
             "required": ["remoteRepository", "localSourcesDirectory"]
@@ -44,6 +61,13 @@
             "required": ["navModelToolsPath"]
         }
     },
-    "required": ["database", "repository", "navModules"],
+    "required": ["type", "database", "repository"],
+    "if": {
+        "properties": {
+            "type": {"enum": ["Container"]}
+        }
+    },
+    "then": { "required": ["container"] },
+    "else": { "required": ["navModules"]},
     "additionalProperties": false
 }

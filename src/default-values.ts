@@ -1,4 +1,4 @@
-import { Environment } from "./interfaces/environment";
+import { Environment, EnvironmentType } from "./interfaces/environment";
 
 export function getDefaultNavModelToolsPath() {
     return "C:\\Program Files (x86)\\Microsoft Dynamics 365 Business Central\\130\\RoleTailored Client\\NavModelTools.ps1";
@@ -10,10 +10,15 @@ export function getDefaultNavDatabaseName() {
     return "Demo Database NAV (13-0)";
 }
 export function getDefaultUidOffset() {
-    return 52066045;
+    return 52063045;
 }
 export function createDefaultEnvironment() {
+    return createDefaultLocalEnvironment();
+}
+
+export function createDefaultLocalEnvironment() {
     return {
+        type: EnvironmentType.local,
         database: {
             databaseName: getDefaultNavDatabaseName(),
             // Feature not implemented yet
@@ -26,6 +31,25 @@ export function createDefaultEnvironment() {
         navModules: {
             navModelToolsPath: getDefaultNavModelToolsPath(),
             navAdminToolPath: getDefaultNavAdminToolPath()
+        }
+    } as Environment;
+}
+
+export function createDefaultContainerEnvironment() {
+    return {
+        type: EnvironmentType.container,
+        container: {
+            name: "BCSandbox",
+            serverInstance: "NAV"
+        },
+        database: {
+            databaseName: getDefaultNavDatabaseName(),
+            // Feature not implemented yet
+            // uidOffset: getDefaultUidOffset()
+        },
+        repository: {
+            remoteRepository: "/path/to/remote/repository",
+            localSourcesDirectory: "./src"
         }
     } as Environment;
 }
