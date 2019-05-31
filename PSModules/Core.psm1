@@ -79,7 +79,7 @@ function Update-RemoteRepoWithLocalRepo {
     Set-Location $cwd;
 }
 
-Export-ModuleMember -Function New-NavEnvironment;
+Export-ModuleMember -Function Initialize-RemoteReportWithLocalDev;
 Export-ModuleMember -Function Initialize-NavEnvironment;
 Export-ModuleMember -Function Update-LocalRepoWithRemoteRepo;
 Export-ModuleMember -Function Update-RemoteRepoWithLocalRepo;
