@@ -8,8 +8,11 @@ function Initialize-RemoteRepoWithLocalDev {
         [string] $ContainerName,
         [string] $SourcesDirectory = "./src"
         )
-        $RemoteRepoDirectory = "$($RemoteRepo).git";
-        git init --bare $RemoteRepoDirectory;
+        if (-Not(IsGitRepoLocation($RemoteRepo))) {
+            if (Test-Path $RemoteRepo) {
+                git init --bare $RemoteRepo;
+            }
+        }
         if (Test-Path -Path $SourcesDirectory) {
             Remove-Item $SourcesDirectory -Recurse -Force;
         }

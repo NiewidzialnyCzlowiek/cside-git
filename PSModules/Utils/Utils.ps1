@@ -2,6 +2,21 @@ function IsContainerRunning($ContainerName) {
     return docker inspect -f "{{.State.Running}}" $ContainerName;
 }
 
+function IsGitRepoLocation([string] $uri) {
+    $isGitRepo = $false;
+    if (Test-Path $uri) {
+        $cwd = Get-Location;
+        Set-Location -Path $uri;
+        $isBare=git rev-parse --is-bare-repository;
+        $isWt=git rev-parse --is-inside-work-tree;
+        $isGitRepo = $isBare -or $isWt;
+        Set-Location $cwd;
+    } elseif($uri.EndsWith(".git")) {
+        $isGitRepo = $true;
+    }
+    return $isGitRepo;
+}
+
 function Get-ContainerId($ContainerName) {
     return docker ps --no-trunc -aqf "name=$($ContainerName)"
 }

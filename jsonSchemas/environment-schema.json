@@ -34,7 +34,6 @@
             "properties": {
                 "remoteRepository": {
                     "type": "string",
-                    "format": "uri",
                     "description": "Uri leading to the remote repository that will be used to synchronize local development environment"
                 },
                 "localSourcesDirectory": {
