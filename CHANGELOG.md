@@ -1,9 +1,15 @@
 # Change Log
 
-All notable changes to the "cside-git" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## 1.0.2
 
-## [Unreleased]
+ - Fix a bug where cside-git console didn't load the core PS Module properly
+ - Add a possibility to export objects to new syntax using **exportToNewSyntax** setting in container environment settings
 
-- Initial release
+## 1.0.1
+
+- Add support for container dev environment
+
+## 1.0.0
+
+Initial release

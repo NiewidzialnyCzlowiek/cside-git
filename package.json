@@ -9,7 +9,7 @@
 	},
 	"publisher": "bartlomiejszal",
 	"license": "MIT",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"icon": "icon.png",
 	"engines": {
 		"vscode": "^1.32.0"
