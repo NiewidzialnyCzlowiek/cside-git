@@ -114,7 +114,8 @@ export class TerminalManager {
                     this.runCommand("Update-LocalRepoWithContainerDev",
                         [`-ContainerName "${env.container.name}"`,
                         `-DatabaseName "${env.database.databaseName}"`,
-                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`]);	
+                        `-SourcesDirectory "${env.repository.localSourcesDirectory}"`,
+                        `-ExportToNewSyntax \$${env.container.exportObjectsToNewSyntax}`]);	
                 }
                 else {
                     if(!this.navModulesLoaded) {

@@ -54,7 +54,8 @@ function Update-LocalRepoWithContainerDev {
         [Parameter(Mandatory=$true)]
         [string] $DatabaseName,
         [string] $SourcesDirectory = "./src",
-        [string] $Filter = 'Modified=Yes'
+        [string] $Filter = 'Modified=Yes',
+        [bool] $ExportToNewSyntax = $true
     )
     $containerFilesPath = Invoke-CommandInWindowsContainer -ContainerName $ContainerName -ScriptBlock {
         $promptFile = "C:\Run\Prompt.ps1"
@@ -69,8 +70,11 @@ function Update-LocalRepoWithContainerDev {
         if (-Not(Test-Path -Path $tempExportDirectory)) {
             New-Item -Path $tempExportDirectory -ItemType Directory | Out-Null;
         }
-        
-        Export-NAVApplicationObject -DatabaseName $args[0] -Filter $args[1] -Path $tempExportFilePath -ExportTxtSkipUnlicensed -Force -Confirm:$false | Out-Null;
+        if ($args[2] -eq $true) {
+            Export-NAVApplicationObject -DatabaseName $args[0] -Filter $args[1] -Path $tempExportFilePath -ExportTxtSkipUnlicensed -Force -Confirm:$false -ExportToNewSyntax | Out-Null;
+        } else {
+            Export-NAVApplicationObject -DatabaseName $args[0] -Filter $args[1] -Path $tempExportFilePath -ExportTxtSkipUnlicensed -Force -Confirm:$false | Out-Null;
+        }
         Set-NAVApplicationObjectProperty -TargetPath $tempExportFilePath -ModifiedProperty "No" -DateTimeProperty "";
         if(Test-Path -Path $tempExportFilePath) {
             Split-NAVApplicationObjectFile -Source $tempExportFilePath -Destination $tempExportDirectory -Force -Confirm:$false;
@@ -83,7 +87,7 @@ function Update-LocalRepoWithContainerDev {
         Compress-Archive -Path "./*" -DestinationPath $archivePath;
         
         return $tempExportDirectory;
-    } -ArgumentList $DatabaseName,$Filter
+    } -ArgumentList $DatabaseName,$Filter,$ExportToNewSyntax
 
     Copy-ArchiveFromContainerThenExpandAndDelete -ContainerName $ContainerName -ContainerPath $containerFilesPath -LocalPath $SourcesDirectory -ArchiveName "Objects.zip";
     

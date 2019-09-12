@@ -40,7 +40,8 @@ export function createDefaultContainerEnvironment() {
         type: EnvironmentType.container,
         container: {
             name: "BCSandbox",
-            serverInstance: "NAV"
+            serverInstance: "NAV",
+            exportObjectsToNewSyntax: true
         },
         database: {
             databaseName: getDefaultNavDatabaseName(),

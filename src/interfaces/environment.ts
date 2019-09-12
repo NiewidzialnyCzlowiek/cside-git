@@ -3,6 +3,7 @@ export interface Environment {
     container: {
         name: string;
         serverInstance: string;
+        exportObjectsToNewSyntax: boolean;
     }
     database: {
         databaseName: string;

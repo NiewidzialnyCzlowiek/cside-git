@@ -16,6 +16,10 @@
                 "serverInstance": {
                     "type": "string",
                     "description": "Name of the NAV server instance inside the container"
+                },
+                "exportObjectsToNewSyntax": {
+                    "type": "boolean",
+                    "description": "Specifies if the objects from the container should be exported to the new syntax (locale independent)"
                 }
             }
         },
