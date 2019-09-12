@@ -193,9 +193,11 @@ export class TerminalManager {
             this.navModulesLoaded = false;
         }
         if(this.terminal) {
-            this.terminal.sendText('powershell');
-            this.terminal.sendText(`Import-Module "${this.context.asAbsolutePath('PSModules/Core')}"`);
             this.terminal.show(true);
+            if (!this.isPowershellDefaultShell()) {
+                this.terminal.sendText('powershell');
+            }
+            this.terminal.sendText(`Import-Module "${this.context.asAbsolutePath('PSModules/Core')}"`);
         }
     }
 
@@ -237,5 +239,14 @@ export class TerminalManager {
                     }
                 });
         });
+    }
+
+    private isPowershellDefaultShell(): boolean { 
+        const integratedShellPath = vscode.workspace.getConfiguration('terminal.integrated.shell').get<string>('windows');
+        if (integratedShellPath) {
+            return integratedShellPath.includes('powershell') ? true: false;
+        } else {
+            return true;
+        }
     }
 }
